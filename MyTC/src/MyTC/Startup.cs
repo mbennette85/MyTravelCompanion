@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using MyTC.Models;
+using Microsoft.Data.Entity;
 
 namespace MyTC
 {
@@ -39,6 +40,16 @@ namespace MyTC
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowNewDevelopmentEnvironment",
+
+                    builder => builder
+                       .AllowAnyOrigin() //allows from anything(including virtual box)
+                       .AllowAnyMethod()
+                       .AllowAnyHeader());
+                      
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
