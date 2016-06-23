@@ -8,9 +8,10 @@ using MyTC.Models;
 namespace MyTC.Migrations
 {
     [DbContext(typeof(MyTCContext))]
-    partial class MyTCContextModelSnapshot : ModelSnapshot
+    [Migration("20160623151639_ThirdMigration")]
+    partial class ThirdMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")

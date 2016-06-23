@@ -8,9 +8,10 @@ using MyTC.Models;
 namespace MyTC.Migrations
 {
     [DbContext(typeof(MyTCContext))]
-    partial class MyTCContextModelSnapshot : ModelSnapshot
+    [Migration("20160616195340_AddUsername")]
+    partial class AddUsername
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
@@ -48,8 +49,6 @@ namespace MyTC.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("GenreId");
-
-                    b.Property<string>("Name");
 
                     b.Property<string>("Translation");
 
