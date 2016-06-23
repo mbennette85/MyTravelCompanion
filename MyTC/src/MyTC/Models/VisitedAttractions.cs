@@ -14,5 +14,6 @@ namespace MyTC.Models
         public int AttractionId { get; set; }
         public string Comments { get; set; }
         public int AttractionRating { get; set; }
+        public string Name { get; set; }
     }
 }

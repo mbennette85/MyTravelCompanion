@@ -5,53 +5,58 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using MyTC.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+
+// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MyTC.Controllers
 {
     [Route("api/[controller]")]
     [Produces("application/json")]
     [EnableCors("AllowDevelopmentEnvironment")]
-    public class TravelersController : Controller
+    public class HotButtonsController : Controller
     {
         private MyTCContext _context;
 
-        public TravelersController(MyTCContext context)
+        public HotButtonsController(MyTCContext context)
         {
             _context = context;
         }
 
         // GET: api/values
         [HttpGet]
-        public IActionResult Get([FromQuery] string username)
+        public IActionResult Get([FromQuery] string name)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            IQueryable<Travelers> vikings = from v in _context.Travelers select v;
-            //                         {
-            //                             TravelerId = v.TravelerId,
-            //                             Username = viking.Username,
-            //                             EmailAddress = viking.EmailAddress,
-            //                         };
 
-            if (username != null)
+            IQueryable<HotButtons> button = from b in _context.HotButtons
+                                             select new HotButtons
+                                             {
+                                                 ButtonId = b.ButtonId,
+                                                 GenreId = b.GenreId,
+                                                 Translation = b.Translation,
+                                                 Name = b.Name
+                                             };
+
+            if (name != null)
             {
-                vikings = vikings.Where(g => g.Username == username);
+                button = button.Where(g => g.Name == name);
             }
 
-            if (vikings == null)
+            if (button == null)
             {
                 return NotFound();
             }
 
-            return Ok(vikings);
+            return Ok(button);
         }
 
         // GET api/values/5
-        [HttpGet("{id}", Name = "GetTraveler")]
+        [HttpGet("{id}", Name ="GetButtons")]
         public IActionResult Get(int id)
         {
             if (!ModelState.IsValid)
@@ -59,19 +64,19 @@ namespace MyTC.Controllers
                 return BadRequest(ModelState);
             }
 
-            Travelers geek = _context.Travelers.Single(m => m.TravelerId == id);
+            HotButtons button = _context.HotButtons.Single(m => m.ButtonId == id);
 
-            if (geek == null)
+            if (button == null)
             {
                 return NotFound();
             }
 
-            return Ok(geek);
+            return Ok(button);
         }
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]Travelers traveler)
+        public IActionResult Post([FromBody]HotButtons button)
         {
             if (!ModelState.IsValid)
             {
@@ -79,17 +84,17 @@ namespace MyTC.Controllers
             }
 
 
-            //var existingUser = from t in _context.Travelers
-            //                   where t.Username == traveler.Username
-            //                   select t;
+            //var existingUser = from g in _context.Attractions
+            //                   where g.Name == place.Name
+            //                   select g;
 
-            //if (existingUser.Count<Travelers>() > 0)
+            //if (existingUser.Count<Attractions>() > 0)
             //{
             //    return new StatusCodeResult(StatusCodes.Status409Conflict);
             //}
 
 
-            _context.Travelers.Add(traveler);
+            _context.HotButtons.Add(button);
 
             try
             {
@@ -97,7 +102,7 @@ namespace MyTC.Controllers
             }
             catch (DbUpdateException)
             {
-                if (TravelerExists(traveler.TravelerId))
+                if (ButtonExists(button.ButtonId))
                 {
                     return new StatusCodeResult(StatusCodes.Status409Conflict);
                 }
@@ -107,25 +112,24 @@ namespace MyTC.Controllers
                 }
             }
 
-            return CreatedAtRoute("GetTraveler", new { id = traveler.TravelerId }, traveler);
+            return CreatedAtRoute("GetButtons", new { id = button.ButtonId }, button);
         }
-
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Travelers traveler)
+        public IActionResult Put(int id, [FromBody] HotButtons button)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != traveler.TravelerId)
+            if (id != button.ButtonId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(traveler).State = EntityState.Modified;
+            _context.Entry(button).State = EntityState.Modified;
 
             try
             {
@@ -133,7 +137,7 @@ namespace MyTC.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TravelerExists(traveler.TravelerId))
+                if (!ButtonExists(button.ButtonId))
                 {
                     return NotFound();
                 }
@@ -155,22 +159,20 @@ namespace MyTC.Controllers
                 return BadRequest(ModelState);
             }
 
-            Travelers traveler = _context.Travelers.Single(m => m.TravelerId == id);
-            if (traveler == null)
+            HotButtons button = _context.HotButtons.Single(m => m.ButtonId == id);
+            if (button == null)
             {
                 return NotFound();
             }
 
-            _context.Travelers.Remove(traveler);
+            _context.HotButtons.Remove(button);
             _context.SaveChanges();
 
-            return Ok(traveler);
+            return Ok(button);
         }
-
-    private bool TravelerExists(int id)
+        private bool ButtonExists(int id)
         {
-            return _context.Travelers.Count(e => e.TravelerId == id) > 0;
+            return _context.HotButtons.Count(e => e.ButtonId == id) > 0;
         }
-
     }
 }

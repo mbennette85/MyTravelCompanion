@@ -13,45 +13,52 @@ namespace MyTC.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [EnableCors("AllowDevelopmentEnvironment")]
-    public class TravelersController : Controller
+    public class AttractionsController : Controller
     {
         private MyTCContext _context;
 
-        public TravelersController(MyTCContext context)
+        public AttractionsController(MyTCContext context)
         {
             _context = context;
         }
 
-        // GET: api/values
         [HttpGet]
-        public IActionResult Get([FromQuery] string username)
+        public IActionResult Get([FromQuery] string name)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            IQueryable<Travelers> vikings = from v in _context.Travelers select v;
-            //                         {
-            //                             TravelerId = v.TravelerId,
-            //                             Username = viking.Username,
-            //                             EmailAddress = viking.EmailAddress,
-            //                         };
 
-            if (username != null)
+            IQueryable<Attractions> places = from p in _context.Attractions
+                                     select new Attractions
+                                     {
+                                         AttractionId = p.AttractionId,
+                                         GenreId = p.GenreId,
+                                         Name = p.Name,
+                                         StreetAddress = p.StreetAddress,
+                                         PostalCode = p.PostalCode,
+                                         Country = p.Country,
+                                         Description = p.Description,
+                                         Hours = p.Hours
+                                         //FigurineHref = String.Format("/api/Inventory?GeekId={0}", user.GeekId)
+                                     };
+
+            if (name != null)
             {
-                vikings = vikings.Where(g => g.Username == username);
+                places = places.Where(g => g.Name == name);
             }
 
-            if (vikings == null)
+            if (places == null)
             {
                 return NotFound();
             }
 
-            return Ok(vikings);
+            return Ok(places);
         }
 
         // GET api/values/5
-        [HttpGet("{id}", Name = "GetTraveler")]
+        [HttpGet("{id}", Name ="GetAttraction")]
         public IActionResult Get(int id)
         {
             if (!ModelState.IsValid)
@@ -59,19 +66,19 @@ namespace MyTC.Controllers
                 return BadRequest(ModelState);
             }
 
-            Travelers geek = _context.Travelers.Single(m => m.TravelerId == id);
+            Attractions place = _context.Attractions.Single(m => m.AttractionId == id);
 
-            if (geek == null)
+            if (place == null)
             {
                 return NotFound();
             }
 
-            return Ok(geek);
+            return Ok(place);
         }
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]Travelers traveler)
+        public IActionResult Post([FromBody]Attractions place)
         {
             if (!ModelState.IsValid)
             {
@@ -79,17 +86,17 @@ namespace MyTC.Controllers
             }
 
 
-            //var existingUser = from t in _context.Travelers
-            //                   where t.Username == traveler.Username
-            //                   select t;
+            //var existingUser = from g in _context.Attractions
+            //                   where g.Name == place.Name
+            //                   select g;
 
-            //if (existingUser.Count<Travelers>() > 0)
+            //if (existingUser.Count<Attractions>() > 0)
             //{
             //    return new StatusCodeResult(StatusCodes.Status409Conflict);
             //}
 
 
-            _context.Travelers.Add(traveler);
+            _context.Attractions.Add(place);
 
             try
             {
@@ -97,7 +104,7 @@ namespace MyTC.Controllers
             }
             catch (DbUpdateException)
             {
-                if (TravelerExists(traveler.TravelerId))
+                if (AttractionExists(place.AttractionId))
                 {
                     return new StatusCodeResult(StatusCodes.Status409Conflict);
                 }
@@ -107,25 +114,24 @@ namespace MyTC.Controllers
                 }
             }
 
-            return CreatedAtRoute("GetTraveler", new { id = traveler.TravelerId }, traveler);
+            return CreatedAtRoute("GetAttraction", new { id = place.AttractionId }, place);
         }
-
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Travelers traveler)
+        public IActionResult Put(int id, [FromBody] Attractions place)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != traveler.TravelerId)
+            if (id != place.AttractionId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(traveler).State = EntityState.Modified;
+            _context.Entry(place).State = EntityState.Modified;
 
             try
             {
@@ -133,7 +139,7 @@ namespace MyTC.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TravelerExists(traveler.TravelerId))
+                if (!AttractionExists(place.AttractionId))
                 {
                     return NotFound();
                 }
@@ -155,22 +161,20 @@ namespace MyTC.Controllers
                 return BadRequest(ModelState);
             }
 
-            Travelers traveler = _context.Travelers.Single(m => m.TravelerId == id);
-            if (traveler == null)
+            Attractions place = _context.Attractions.Single(m => m.AttractionId == id);
+            if (place == null)
             {
                 return NotFound();
             }
 
-            _context.Travelers.Remove(traveler);
+            _context.Attractions.Remove(place);
             _context.SaveChanges();
 
-            return Ok(traveler);
+            return Ok(place);
         }
-
-    private bool TravelerExists(int id)
+        private bool AttractionExists(int id)
         {
-            return _context.Travelers.Count(e => e.TravelerId == id) > 0;
+            return _context.Attractions.Count(e => e.AttractionId == id) > 0;
         }
-
     }
 }

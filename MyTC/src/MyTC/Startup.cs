@@ -42,7 +42,7 @@ namespace MyTC
             services.AddMvc();
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowNewDevelopmentEnvironment",
+                options.AddPolicy("AllowDevelopmentEnvironment",
 
                     builder => builder
                        .AllowAnyOrigin() //allows from anything(including virtual box)
@@ -55,12 +55,13 @@ namespace MyTC
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors("AllowAll");
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseApplicationInsightsRequestTelemetry();
+            //app.UseApplicationInsightsRequestTelemetry();
 
-            app.UseApplicationInsightsExceptionTelemetry();
+            //app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
         }
